@@ -9,12 +9,11 @@ var code = fs.readFileSync('./test.js', 'utf8');
 console.log(code);
 console.log('-----start-----');
 
-var instrumentedCode = walker(code, 'daFuck');
+var instrumentedCode = walker(code, '________');
 console.log(instrumentedCode)
 var registry = require('./registry');
-// var reg = registry.register;
 
-var daFuck = registry.register;
+var ________ = registry.register;
 eval(instrumentedCode);
 
 

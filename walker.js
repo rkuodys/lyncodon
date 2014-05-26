@@ -8,18 +8,12 @@ var escodegen = require ('escodegen');
 var NAME = '______&&&&&&&&&';
 
 var validProperties = ['expression', 'expressions', 'arguments', 'body'];
-var wrapTypes = ['CallExpression', 'LogicalExpression', 'UnaryExpression'];
+var wrapTypes = ['CallExpression', 'LogicalExpression', 'UnaryExpression', 'BinaryExpression', 'Identifier'];
 var specialTypes = ['ReturnStatement'];
+var noWrapParentTypes = ['FunctionDeclaration'];
 
-// var code = 'function a (){console.log("hello")}; a();';
-
-// walker(code);
-// 
-// console.log(registry.getResult());
 
 module.exports = instrumentCode;
-
-
 
 function instrumentCode(code, name) {
     NAME = name;
@@ -36,19 +30,24 @@ function instrumentCode(code, name) {
     
 }    
 
-// 
-//     console.log(instrumentedCode);
-//     eval(instrumentedCode);
-// }
-
 
 function iterate(node, parent, prop) {
 	for (var i in wrapTypes) {
-		if(node.type == wrapTypes[i]) {			
+		if(node.type == wrapTypes[i] && ! specialConditions(node, parent, prop)) {			
 			parent[prop] = returnReg(node, parent);
 			return;
 		}
 	}
+}
+
+function specialConditions(node, parent, prop) {
+    if (parent && ~noWrapParentTypes.indexOf(parent.type)) {
+        return true;
+    }
+    if (parent && parent.type === 'MemberExpression' && prop === 'property') {
+        return true;
+    } 
+    return false;
 }
 
 function walk(pointer, parent, prop) {
