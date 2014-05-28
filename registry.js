@@ -33,10 +33,13 @@ function getResults() {
         }
     }
     
-    results.push({
-        range : calls[i],
-        calls : count+1
-    });
+    if (calls[i]){
+        results.push({
+            range : calls[i],
+            calls : count+1
+        });    
+    }  
+    
     	    
     return results;
     

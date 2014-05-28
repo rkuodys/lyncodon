@@ -8,7 +8,7 @@ var escodegen = require ('escodegen');
 var NAME = '______&&&&&&&&&';
 
 var validProperties = ['expression', 'expressions', 'arguments', 'body'];
-var wrapTypes = ['CallExpression', 'LogicalExpression', 'UnaryExpression', 'BinaryExpression', 'Identifier'];
+var wrapTypes = ['CallExpression', 'LogicalExpression', 'AssignmentExpression', 'Identifier', 'UnaryExpression', 'BinaryExpression',  'MemberExpression'];
 var specialTypes = ['ReturnStatement'];
 var noWrapParentTypes = ['FunctionDeclaration'];
 
@@ -32,21 +32,24 @@ function instrumentCode(code, name) {
 
 
 function iterate(node, parent, prop) {
-	for (var i in wrapTypes) {
-		if(node.type == wrapTypes[i] && ! specialConditions(node, parent, prop)) {			
-			parent[prop] = returnReg(node, parent);
-			return;
-		}
+	if( ~ wrapTypes.indexOf(node.type) && ! specialConditions(node, parent, prop)) {			
+		parent[prop] = returnReg(node, parent);
+		return;
 	}
+    return;
 }
 
 function specialConditions(node, parent, prop) {
     if (parent && ~noWrapParentTypes.indexOf(parent.type)) {
         return true;
     }
-    if (parent && parent.type === 'MemberExpression' && prop === 'property') {
+    if (node.type == 'Identifier') {
+        if (parent && parent.type == 'AssignmentExpression' && prop == 'right'){
+            return false;        
+        }
+          
         return true;
-    } 
+    }    
     return false;
 }
 
@@ -66,7 +69,6 @@ function returnReg(node, parent) {
 	if(!node.range){
 		return node;
 	}	
-
 	return (
      { type: 'CallExpression',
        callee: { type: 'Identifier', name: NAME },
