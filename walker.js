@@ -14,19 +14,21 @@ var noWrapParentTypes = ['FunctionDeclaration'];
 
 
 module.exports = instrumentCode;
+var ranges = []
 
 function instrumentCode(code, name) {
     NAME = name;
+    
+    ranges = [];
 	var ast = esprima.parse(code, { range: true });
-
-	console.log('----------------------new --------------------------------');
-	console.log(require('util').inspect(ast, { colors: true }, 1000));
-	console.log('----------------------WALKS --------------------------------');
-
+	
 	walk(ast);
 	
     var instrumentedCode = escodegen.generate(ast);
-    return instrumentedCode;
+    return {
+        code : instrumentedCode,
+        ranges : ranges
+    }
     
 }    
 
@@ -69,6 +71,7 @@ function returnReg(node, parent) {
 	if(!node.range){
 		return node;
 	}	
+    ranges.push(node.range);
 	return (
      { type: 'CallExpression',
        callee: { type: 'Identifier', name: NAME },

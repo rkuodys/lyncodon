@@ -1,0 +1,13 @@
+{   "name" : "lyncodon",
+    "description" : "Code coverage watch tool",
+    "scripts" : {
+        "test" : "./node_modules/mocha/bin/mocha"
+    },
+    "dependencies": {
+        "esprima": "^1.2.1",
+        "escodegen": "^1.3.2"
+    },
+    "devDependencies": {
+        "mocha": "1.20.0"
+  }
+}
