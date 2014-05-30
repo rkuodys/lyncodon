@@ -21,10 +21,11 @@ function instrumentCode(code, name) {
     
     ranges = [];
 	var ast = esprima.parse(code, { range: true });
-	
+    // console.log(require('util').inspect(ast, {colors:true}, 1000));
 	walk(ast);
 	
     var instrumentedCode = escodegen.generate(ast);
+    require('fs').writeFileSync('./res.js', instrumentedCode);
     return {
         code : instrumentedCode,
         ranges : ranges
@@ -48,10 +49,22 @@ function specialConditions(node, parent, prop) {
     if (node.type == 'Identifier') {
         if (parent && parent.type == 'AssignmentExpression' && prop == 'right'){
             return false;        
-        }
-          
+        }          
         return true;
-    }    
+    }
+    if (node.type == 'MemberExpression') {
+        if (parent 
+            && (parent.type == 'AssignmentExpression') 
+            && prop == 'right'){
+            return false;       
+        }    
+        if (parent 
+            && (parent.type == 'ReturnStatement')){
+            return false;       
+        }       
+        return true;        
+    }
+        
     return false;
 }
 
