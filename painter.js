@@ -30,6 +30,8 @@ function paint(code, entered, all) {
 }
 
 function colorCode( code, steps) {
+    if (steps.length == 0) return code;
+    
     var i = steps.length, code;
     var lastBeginIndx = steps[i-1].range[1];
     while ( i-- ) {
@@ -96,7 +98,8 @@ function merge(green, red) {
 }
 
 function equalRanges(range1, range2) {
-    return range1[0] == range2[0] && range1[1] == range2[1];
+    return range1 && range2 ?    
+             (range1[0] == range2[0] && range1[1] == range2[1]) : false;
 }
 
 function isInside(range1, range2) { 
@@ -109,6 +112,11 @@ function isInside(range1, range2) {
 }
 
 function pushRemainingArray(toArr, fromArr, i) {
+    if (toArr.length == 0){
+        toArr = fromArr;
+        return;
+    }
+    
     var last = toArr[toArr.length -1 ].range;
     for (; i < fromArr.length; i++){
         if (! equalRanges(last, fromArr[i])){

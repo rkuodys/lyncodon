@@ -19,20 +19,23 @@ function c() {
 var code = fs.readFileSync('./test.js', 'utf8');
 var originalCode = code;
 
-var walkResults = walker(code, '________');
+var walkResults = walker(code, 'bybys');
 
 var instrumentedCode = walkResults.code;
 var instrumentedRanges = walkResults.ranges;
 
 var registry = require('./registry');
 
-var ________ = registry.register;
+// var ________ = registry.register;
+
+global.bybys = registry.register;
 
 // console.log(instrumentedCode);
 
 var _suq = {define : function(){}}
 fs.writeFileSync('./res.js', instrumentedCode);
-console.log(instrumentedRanges);
+// console.log(instrumentedCode);
+
 eval(instrumentedCode);
 var results = registry.getResults();
 
